@@ -1,27 +1,44 @@
 pipeline {
     agent any
     environment {
-        // Ganti dengan username Docker Anda
+        // UBAH BAGIAN INI: Ganti <USERNAME_DOCKER_ANDA> dengan username Docker Hub Anda
         IMAGE_NAME = 'andrewnapitupulu/library-api-tugas'
+        REGISTRY_CREDENTIALS = 'dockerhub-credentials'
     }
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/andrewnapit/library-api-tugas.git'
+                checkout scm
+            }
+        }
+        stage('Build') {
+            steps {
+                bat "echo 'Mulai build aplikasi...'"
             }
         }
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t ${IMAGE_NAME}:latest ."
+                bat "docker build -t %IMAGE_NAME%:%BUILD_NUMBER% ."
             }
         }
         stage('Push Docker Image') {
             steps {
-                withCredentials([string(credentialsId: 'docker-token', variable: 'DOCKER_TOKEN')]) {
-                    bat "docker login -u andrewnapitupulu -p ${DOCKER_TOKEN}"
-                    bat "docker push ${IMAGE_NAME}:latest"
+                withCredentials([usernamePassword(credentialsId: REGISTRY_CREDENTIALS,
+                                  usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    bat "docker login -u %USER% -p %PASS%"
+                    bat "docker push %IMAGE_NAME%:%BUILD_NUMBER%"
+                    bat "docker tag %IMAGE_NAME%:%BUILD_NUMBER% %IMAGE_NAME%:latest"
+                    bat "docker push %IMAGE_NAME%:latest"
                 }
             }
+        }
+    }
+    post {
+        always {
+            echo 'Selesai menjalankan pipeline!'
+        }
+        success {
+            echo 'Pipeline berhasil dikerjakan!'
         }
     }
 }
