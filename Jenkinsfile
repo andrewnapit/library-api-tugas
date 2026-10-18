@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         // Ganti dengan username Docker Anda
-        IMAGE_NAME = '<andrewnapitupulu>/library-api-tugas'
+        IMAGE_NAME = 'andrewnapitupulu/library-api-tugas'
     }
     stages {
         stage('Checkout') {
@@ -18,7 +18,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 withCredentials([string(credentialsId: 'docker-token', variable: 'DOCKER_TOKEN')]) {
-                    bat "docker login -u <USERNAME_DOCKER_ANDA> -p ${DOCKER_TOKEN}"
+                    bat "docker login -u andrewnapitupulu -p ${DOCKER_TOKEN}"
                     bat "docker push ${IMAGE_NAME}:latest"
                 }
             }
