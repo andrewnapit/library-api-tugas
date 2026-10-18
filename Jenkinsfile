@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         // Ganti dengan username Docker Anda
-        IMAGE_NAME = '<USERNAME_DOCKER_ANDA>/library-api-tugas'
+        IMAGE_NAME = '<andrewnapitupulu>/library-api-tugas'
     }
     stages {
         stage('Checkout') {
